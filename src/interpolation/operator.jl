@@ -217,11 +217,6 @@ function sort_by_Rnorm(tb::TBOperator)
         norm(tb.lattice * R)
     end
     idx = sortperm(normR)
-
-    @printf("# No.    ||R|| (Å)    ||H(R)||\n")
-    for i in 1:20
-        @printf("%2d       %.5f       %.5f\n", i - 1, normR[idx[i]], normO[idx[i]])
-    end
     return idx, normR, normO
 end
 
@@ -241,9 +236,7 @@ H_cut = Wannier.cut(hamiltonian)
 ```
 """
 function cut(tb::TBOperator, Rcut::Real)
-    println("Sorting by R norm...")
     _, normR, _ = sort_by_Rnorm(tb)
-    println("")
     idx_keep = normR .<= Rcut
     Rspace = BareRspace(tb.Rspace.lattice, deepcopy(tb.Rvectors[idx_keep]))
     return TBOperator(tb.name, Rspace, deepcopy(tb.operator[idx_keep]))

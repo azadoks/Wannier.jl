@@ -89,17 +89,10 @@ function LinearAlgebra.eigen!(
 
     n_threads = Threads.nthreads()
     caches = [HermitianEigenWs(zeros(T, nwann, nwann)) for _ in 1:n_threads]
-    progress = Progress(nkpts, 1, "Diagonalizing matrices using $n_threads threads...")
 
-    Threads.@threads for ik in 1:nkpts
-        tid = Threads.threadid()
+    for ik in 1:nkpts
         eigenvecs[ik] .= hamiltonian[ik]
         eigen!(eigenvals[ik], eigenvecs[ik], caches[tid])
-        # this is slower
-        # e = eigen(Hermitian(eigenvecs[ik]))
-        # eigenvals[ik] .= e.values
-        # eigenvecs[ik] .= e.vectors
-        next!(progress)
     end
     return nothing
 end
